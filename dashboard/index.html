@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Barrel Copilot · Intelligent Oak Aging & QR Traceability</title>
+  <style>
+    :root {
+      --bg: #08070b;
+      --card-bg: rgba(24, 18, 22, 0.76);
+      --card-border: rgba(255, 170, 90, 0.12);
+      --card-hover: rgba(255, 170, 90, 0.25);
+      --text: #f5f5f7;
+      --text-muted: #958e94;
+      --oak-amber: #ff9f0a;
+      --oak-glow: rgba(255, 159, 10, 0.35);
+      --wine-ruby: #e0284f;
+      --emerald: #30d158;
+      --danger: #ff453a;
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+      background: radial-gradient(circle at 50% -15%, #2a151b 0%, var(--bg) 65%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 32px 24px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container { max-width: 1260px; margin: 0 auto; }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--card-border);
+      margin-bottom: 28px;
+    }
+    .brand h1 {
+      font-size: 2.3rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #fff 40%, #ffc078 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .brand p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-top: 4px;
+    }
+    .badge-pill {
+      background: rgba(255, 159, 10, 0.15);
+      border: 1px solid rgba(255, 159, 10, 0.4);
+      color: #ffc078;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Filter Pills */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+    .filter-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .filter-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+    .filter-btn.active {
+      background: rgba(255, 159, 10, 0.2);
+      border-color: var(--oak-amber);
+      color: #ffc078;
+      font-weight: 600;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 24px;
+    }
+    .col-4 { grid-column: span 4; }
+    .col-7 { grid-column: span 7; }
+    .col-8 { grid-column: span 8; }
+    .col-5 { grid-column: span 5; }
+    .col-12 { grid-column: span 12; }
+
+    @media (max-width: 950px) {
+      .col-4, .col-5, .col-7, .col-8 { grid-column: span 12; }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+      transition: all 0.2s ease;
+    }
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .card-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    /* Cellar Rack 2D Grid */
+    .rack-section {
+      margin-bottom: 24px;
+    }
+    .rack-header {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #ffc078;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      padding-bottom: 6px;
+    }
+    .barrel-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+    }
+    @media (max-width: 700px) {
+      .barrel-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    /* Barrel Icon Button */
+    .barrel-item {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 12px 8px;
+      text-align: center;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .barrel-item:hover {
+      transform: translateY(-2px);
+      border-color: var(--oak-amber);
+      background: rgba(255, 159, 10, 0.08);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+    }
+    .barrel-item.selected {
+      border: 2px solid var(--oak-amber);
+      background: rgba(255, 159, 10, 0.15);
+      box-shadow: 0 0 16px var(--oak-glow);
+    }
+
+    .led-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      position: absolute;
+      top: 8px;
+      right: 8px;
+    }
+    .led-ok { background: #30d158; box-shadow: 0 0 8px #30d158; }
+    .led-warn { background: #ff9f0a; box-shadow: 0 0 8px #ff9f0a; }
+    .led-danger { background: #ff453a; box-shadow: 0 0 8px #ff453a; }
+
+    .barrel-icon {
+      font-size: 1.8rem;
+      margin-bottom: 4px;
+      display: block;
+    }
+    .barrel-code {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #f5f5f7;
+      font-family: ui-monospace, monospace;
+    }
+    .barrel-cooper {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Inspector Drawer */
+    .inspector-card {
+      background: rgba(30, 20, 25, 0.85);
+      border: 1px solid var(--oak-amber);
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.6);
+    }
+    .qr-container {
+      background: #ffffff;
+      padding: 14px;
+      border-radius: 14px;
+      width: 170px;
+      height: 170px;
+      margin: 0 auto 20px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .qr-container svg { width: 100%; height: 100%; }
+
+    .spec-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      margin-bottom: 18px;
+    }
+    .spec-table td {
+      padding: 8px 4px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .spec-label { color: var(--text-muted); }
+    .spec-val { text-align: right; font-weight: 600; color: #fff; }
+
+    .btn {
+      background: var(--oak-amber);
+      color: #08070b;
+      border: none;
+      padding: 10px 16px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      border-radius: 10px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 8px;
+      transition: all 0.2s;
+    }
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px var(--oak-glow);
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Slider Group */
+    .form-group { margin-bottom: 16px; }
+    .form-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      margin-bottom: 6px;
+      color: #d1cbd0;
+    }
+    .form-val {
+      font-family: ui-monospace, monospace;
+      font-weight: 600;
+      color: #ffc078;
+    }
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #fff;
+      cursor: pointer;
+      border: 2px solid var(--oak-amber);
+    }
+
+    .footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid var(--card-border);
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <span class="badge-pill">🪵 Smart Barrel Copilot v1.0</span>
+      <h1>Intelligent Oak Cellar & QR Traceability</h1>
+      <p>Diseñado por Cristián González Huenchún · Ingeniero Agrónomo & Magíster (c) Enología, U. de Chile</p>
+    </div>
+    <div style="text-align: right;">
+      <span style="font-size: 0.85rem; color: #958e94;">36 Barricas Activas · Cava Subterránea</span>
+    </div>
+  </header>
+
+  <!-- Filter Pills -->
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filtrar('todas')">Todas las Barricas (36)</button>
+    <button class="filter-btn" onclick="filtrar('ouillage')">⚠️ Requieren Ouillage (<span id="count-ouillage">4</span>)</button>
+    <button class="filter-btn" onclick="filtrar('so2')">🚨 Alerta SO₂ Bajo (<span id="count-so2">2</span>)</button>
+    <button class="filter-btn" onclick="filtrar('primer_uso')">🪵 1er Uso (Nuevas)</button>
+    <button class="filter-btn" onclick="filtrar('frances')">🇫🇷 Roble Francés (30)</button>
+  </div>
+
+  <div class="grid">
+    <!-- Cava 2D (Columna 7) -->
+    <div class="col-7 card">
+      <div class="card-title">
+        <span>Mapa 2D de la Cava de Crianza</span>
+        <span style="font-size: 0.8rem; color: #ffc078;">Haz clic en una barrica para inspeccionar</span>
+      </div>
+      <p class="card-subtitle">Distribución espacial por naves y niveles de altura. Códigos de color indican estado microbiológico y de llenado.</p>
+
+      <div class="rack-section">
+        <div class="rack-header">
+          <span>Rack A · Nave Principal (Barricas #001 a #018)</span>
+          <span>Nivel 3 (Alto) · Nivel 2 · Nivel 1 (Piso)</span>
+        </div>
+        <div class="barrel-grid" id="grid-rack-a"></div>
+      </div>
+
+      <div class="rack-section">
+        <div class="rack-header">
+          <span>Rack B · Cava Subterránea (Barricas #019 a #036)</span>
+          <span>Nivel 3 (Alto) · Nivel 2 · Nivel 1 (Piso)</span>
+        </div>
+        <div class="barrel-grid" id="grid-rack-b"></div>
+      </div>
+    </div>
+
+    <!-- Inspector Lateral (Columna 5) -->
+    <div class="col-5">
+      <div class="card inspector-card" id="inspector-panel">
+        <div class="card-title">
+          <span id="insp-id">BAR-2026-005</span>
+          <span id="insp-status" class="badge-pill" style="color: #ff9f0a; border-color: #ff9f0a;">Requiere Ouillage</span>
+        </div>
+        <p class="card-subtitle" id="insp-vino">Cabernet Sauvignon (Cuartel 12 - VIK)</p>
+
+        <!-- QR Display -->
+        <div class="qr-container" id="qr-box">
+          <!-- SVG QR Dinámico -->
+        </div>
+
+        <table class="spec-table">
+          <tr><td class="spec-label">Tonelería</td><td class="spec-val" id="insp-toneleria">Taransaud</td></tr>
+          <tr><td class="spec-label">Bosque & Grano</td><td class="spec-val" id="insp-bosque">Roble Francés (Allier)</td></tr>
+          <tr><td class="spec-label">Tostado & Capacidad</td><td class="spec-val" id="insp-tostado">Medio Plus (M+) · 225 L</td></tr>
+          <tr><td class="spec-label">Año de Compra / Uso</td><td class="spec-val" id="insp-uso">2026 (1er uso)</td></tr>
+          <tr><td class="spec-label">Último Relleno (Ouillage)</td><td class="spec-val" id="insp-ouillage-fecha">Hace 26 días (Crítico)</td></tr>
+          <tr><td class="spec-label">Merma Acumulada</td><td class="spec-val" id="insp-merma" style="color:#ff9f0a;">1.35 L evaporados</td></tr>
+          <tr><td class="spec-label">SO₂ Libre / Molecular</td><td class="spec-val" id="insp-so2">30.0 mg/L (0.54 mg/L)</td></tr>
+          <tr><td class="spec-label">pH del Vino</td><td class="spec-val" id="insp-ph">3.62</td></tr>
+        </table>
+
+        <button class="btn" onclick="ejecutarOuillage()">💧 Registrar Ouillage (Relleno Completo)</button>
+        <button class="btn btn-outline" onclick="dosificarSO2()">🧪 Micro-Adición de SO₂ (K₂S₂O₅)</button>
+        <button class="btn btn-outline" onclick="imprimirEtiqueta()">🏷️ Imprimir Etiqueta QR Metálica</button>
+      </div>
+
+      <!-- Simulador Microclimático -->
+      <div class="card" style="margin-top: 24px;">
+        <div class="card-title"><span>Simulador 'Part des Anges' (Cava)</span></div>
+        <p class="card-subtitle">Calcula la tasa de transpiración y costo económico de merma.</p>
+
+        <div class="form-group">
+          <div class="form-header">
+            <span>Humedad Relativa de la Cava (% HR)</span>
+            <span class="form-val" id="val-hr">75% HR</span>
+          </div>
+          <input type="range" id="input-hr" min="50" max="95" step="1" value="75" oninput="simularCava()">
+        </div>
+
+        <div class="form-group">
+          <div class="form-header">
+            <span>Temperatura de Cava (°C)</span>
+            <span class="form-val" id="val-cava-temp">15.5 °C</span>
+          </div>
+          <input type="range" id="input-cava-temp" min="11" max="21" step="0.5" value="15.5" oninput="simularCava()">
+        </div>
+
+        <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 10px; font-size: 0.85rem; line-height: 1.5;">
+          <div>Pérdida promedio por barrica: <b id="out-tasa-dia" style="color:#ffc078;">27.4 mL/día</b></div>
+          <div>Merma mensual total (36 barricas): <b id="out-merma-total" style="color:#e0284f;">29.9 Litros/mes</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    Smart Barrel Copilot · SaaS Enológico de Trazabilidad por QR · Universidad de Chile · 2026
+  </footer>
+</div>
+
+<script>
+  // Dataset de 36 Barricas
+  const BARRICAS = [];
+  const tonelerias = ["Taransaud", "Seguin Moreau", "Radoux", "Sylvain", "François Frères", "Canton"];
+  const bosques = ["Roble Francés (Allier)", "Roble Francés (Tronçais)", "Roble Francés (Vosges)", "Roble Francés (Nevers)", "Roble Francés (Allier)", "Roble Americano (Missouri)"];
+  const tostados = ["Medio Plus (M+)", "Medio (M)", "Medio (M)", "Medio Plus (M+)", "Ligero (L)", "Medio (M)"];
+  const vinos = [
+    { n: "Cabernet Sauvignon (Cuartel 12 - VIK)", ph: 3.62, so2: 32.0 },
+    { n: "Carmenere Selección (Cuartel 05 - VIK)", ph: 3.68, so2: 30.0 },
+    { n: "Cabernet Sauvignon Gran Reserva (El Principal)", ph: 3.58, so2: 34.0 },
+    { n: "Chardonnay Fermentado en Barrica (El Principal)", ph: 3.32, so2: 28.0 },
+    { n: "Syrah Alta Expresión (Cachapoal)", ph: 3.65, so2: 31.0 }
+  ];
+
+  let idx = 1;
+  for (let r of ["Rack A", "Rack B"]) {
+    for (let y = 3; y >= 1; y--) { // Nivel 3 arriba, 1 piso
+      for (let x = 1; x <= 6; x++) {
+        const tIdx = (idx - 1) % tonelerias.length;
+        const vIdx = (idx - 1) % vinos.length;
+        const anoUso = idx % 3 === 0 ? 1 : (idx % 2 === 0 ? 2 : 3);
+        const anoCompra = 2026 - (anoUso - 1);
+
+        let dias = 8;
+        let estado = "Óptimo";
+        let merma = 0.28;
+        let so2 = vinos[vIdx].so2;
+
+        if ([5, 14, 23, 31].includes(idx)) {
+          dias = 26;
+          estado = "Requiere Ouillage";
+          merma = 1.35;
+        } else if ([8, 27].includes(idx)) {
+          dias = 12;
+          so2 = 18.0;
+          estado = "Alerta SO₂ Bajo";
+          merma = 0.40;
+        }
+
+        BARRICAS.push({
+          id: `BAR-${anoCompra}-${String(idx).padStart(3, '0')}`,
+          num: idx,
+          rack: r,
+          x: x,
+          y: y,
+          toneleria: tonelerias[tIdx],
+          bosque: bosques[tIdx],
+          tostado: tostados[tIdx],
+          anoUso: anoUso,
+          anoCompra: anoCompra,
+          vino: vinos[vIdx].n,
+          ph: vinos[vIdx].ph,
+          so2: so2,
+          diasOuillage: dias,
+          merma: merma,
+          estado: estado
+        });
+        idx++;
+      }
+    }
+  }
+
+  let barricaSeleccionada = BARRICAS.find(b => b.estado === "Requiere Ouillage") || BARRICAS[0];
+  let filtroActual = 'todas';
+
+  function renderRacks() {
+    const gridA = document.getElementById('grid-rack-a');
+    const gridB = document.getElementById('grid-rack-b');
+    gridA.innerHTML = '';
+    gridB.innerHTML = '';
+
+    BARRICAS.forEach(b => {
+      // Filtrado
+      if (filtroActual === 'ouillage' && b.estado !== 'Requiere Ouillage') return;
+      if (filtroActual === 'so2' && b.estado !== 'Alerta SO₂ Bajo') return;
+      if (filtroActual === 'primer_uso' && b.anoUso !== 1) return;
+      if (filtroActual === 'frances' && !b.bosque.includes('Francés')) return;
+
+      const div = document.createElement('div');
+      div.className = `barrel-item ${b.id === barricaSeleccionada.id ? 'selected' : ''}`;
+      div.onclick = () => seleccionarBarrica(b.id);
+
+      let ledClass = 'led-ok';
+      if (b.estado === 'Requiere Ouillage') ledClass = 'led-warn';
+      else if (b.estado === 'Alerta SO₂ Bajo') ledClass = 'led-danger';
+
+      div.innerHTML = `
+        <span class="led-dot ${ledClass}"></span>
+        <span class="barrel-icon">🪵</span>
+        <div class="barrel-code">${b.id.replace('BAR-', '')}</div>
+        <div class="barrel-cooper">${b.toneleria}</div>
+      `;
+
+      if (b.rack === 'Rack A') gridA.appendChild(div);
+      else gridB.appendChild(div);
+    });
+
+    // Actualizar contadores
+    document.getElementById('count-ouillage').innerText = BARRICAS.filter(b => b.estado === 'Requiere Ouillage').length;
+    document.getElementById('count-so2').innerText = BARRICAS.filter(b => b.estado === 'Alerta SO₂ Bajo').length;
+  }
+
+  function seleccionarBarrica(id) {
+    barricaSeleccionada = BARRICAS.find(b => b.id === id);
+    actualizarInspector();
+    renderRacks();
+  }
+
+  function actualizarInspector() {
+    const b = barricaSeleccionada;
+    document.getElementById('insp-id').innerText = b.id;
+    document.getElementById('insp-vino').innerText = b.vino;
+    document.getElementById('insp-toneleria').innerText = b.toneleria;
+    document.getElementById('insp-bosque').innerText = b.bosque;
+    document.getElementById('insp-tostado').innerText = `${b.tostado} · 225 L`;
+    document.getElementById('insp-uso').innerText = `${b.anoCompra} (${b.anoUso}º uso)`;
+    document.getElementById('insp-ouillage-fecha').innerText = `Hace ${b.diasOuillage} días`;
+    document.getElementById('insp-merma').innerText = `${b.merma.toFixed(2)} L acumulados`;
+    
+    const pka = 1.81;
+    const so2Mol = (b.so2 / (1.0 + Math.pow(10, (b.ph - pka)))).toFixed(2);
+    document.getElementById('insp-so2').innerText = `${b.so2} mg/L (${so2Mol} mg/L mol)`;
+    document.getElementById('insp-ph').innerText = b.ph.toFixed(2);
+
+    const stBadge = document.getElementById('insp-status');
+    stBadge.innerText = b.estado;
+    if (b.estado === 'Óptimo') {
+      stBadge.style.color = '#30d158';
+      stBadge.style.borderColor = '#30d158';
+    } else if (b.estado === 'Requiere Ouillage') {
+      stBadge.style.color = '#ff9f0a';
+      stBadge.style.borderColor = '#ff9f0a';
+    } else {
+      stBadge.style.color = '#ff453a';
+      stBadge.style.borderColor = '#ff453a';
+    }
+
+    generarQRSVG(b.id);
+  }
+
+  function generarQRSVG(id) {
+    // Generar SVG interactivo para la barrica
+    const box = document.getElementById('qr-box');
+    const url = `http://localhost:8070/index.html?barrica=${id}`;
+    box.innerHTML = `
+      <svg viewBox="0 0 100 100" width="140" height="140" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100" height="100" fill="#ffffff" rx="8"/>
+        <!-- QR Patterns Estilizados -->
+        <rect x="10" y="10" width="25" height="25" fill="#111118"/>
+        <rect x="15" y="15" width="15" height="15" fill="#ffffff"/>
+        <rect x="18" y="18" width="9" height="9" fill="#111118"/>
+        <rect x="65" y="10" width="25" height="25" fill="#111118"/>
+        <rect x="70" y="15" width="15" height="15" fill="#ffffff"/>
+        <rect x="73" y="18" width="9" height="9" fill="#111118"/>
+        <rect x="10" y="65" width="25" height="25" fill="#111118"/>
+        <rect x="15" y="70" width="15" height="15" fill="#ffffff"/>
+        <rect x="18" y="73" width="9" height="9" fill="#111118"/>
+        <!-- Bits aleatorios reproducibles -->
+        <rect x="42" y="15" width="8" height="8" fill="#111118"/>
+        <rect x="45" y="30" width="6" height="6" fill="#111118"/>
+        <rect x="55" y="42" width="12" height="6" fill="#111118"/>
+        <rect x="30" y="45" width="8" height="8" fill="#111118"/>
+        <rect x="42" y="65" width="10" height="8" fill="#111118"/>
+        <rect x="65" y="65" width="8" height="8" fill="#111118"/>
+        <rect x="78" y="45" width="8" height="12" fill="#111118"/>
+        <text x="50" y="93" font-size="6" font-family="monospace" text-anchor="middle" fill="#888">${id}</text>
+      </svg>
+    `;
+  }
+
+  function ejecutarOuillage() {
+    barricaSeleccionada.diasOuillage = 0;
+    barricaSeleccionada.merma = 0.0;
+    barricaSeleccionada.estado = barricaSeleccionada.so2 < 20 ? "Alerta SO₂ Bajo" : "Óptimo";
+    alert(`✅ Relleno (Ouillage) completado para ${barricaSeleccionada.id}.\nSe registraron los litros de vino incorporados en la base de datos.`);
+    actualizarInspector();
+    renderRacks();
+  }
+
+  function dosificarSO2() {
+    barricaSeleccionada.so2 = 32.0;
+    barricaSeleccionada.estado = barricaSeleccionada.diasOuillage >= 25 ? "Requiere Ouillage" : "Óptimo";
+    alert(`✅ Micro-adición de SO₂ registrada.\nNivel ajustado a 32.0 mg/L de SO₂ libre con metabisulfito de potasio.`);
+    actualizarInspector();
+    renderRacks();
+  }
+
+  function imprimirEtiqueta() {
+    alert(`🏷️ Enviando orden de impresión térmica/láser para código QR de la barrica ${barricaSeleccionada.id}.`);
+  }
+
+  function filtrar(tipo) {
+    filtroActual = tipo;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    renderRacks();
+  }
+
+  function simularCava() {
+    const hr = parseFloat(document.getElementById('input-hr').value);
+    const temp = parseFloat(document.getElementById('input-cava-temp').value);
+    document.getElementById('val-hr').innerText = hr + '% HR';
+    document.getElementById('val-cava-temp').innerText = temp.toFixed(1) + ' °C';
+
+    const factorTemp = 1.0 + (Math.max(0, temp - 15) * 0.08) - (Math.max(0, 15 - temp) * 0.04);
+    const factorHR = Math.max(0.5, Math.min(2.5, 1.0 + ((80 - hr) * 0.025)));
+    const mlDia = 24.0 * factorTemp * factorHR;
+    const mermaMensualTotal = (mlDia * 30.4 * 36) / 1000.0;
+
+    document.getElementById('out-tasa-dia').innerText = mlDia.toFixed(1) + ' mL/día';
+    document.getElementById('out-merma-total').innerText = mermaMensualTotal.toFixed(1) + ' Litros/mes';
+  }
+
+  window.addEventListener('load', () => {
+    renderRacks();
+    actualizarInspector();
+    simularCava();
+  });
+</script>
+
+</body>
+</html>
