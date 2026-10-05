@@ -7,7 +7,7 @@ Author: Cristián González Huenchún
 import sqlite3
 import json
 from pathlib import Path
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Union
 from datetime import datetime, timedelta
 
 from .models import Barrica, Toneleria, OrigenRoble, NivelTostado, EstadoBarrica
@@ -19,21 +19,19 @@ DB_PATH_DEFAULT = Path(__file__).resolve().parent.parent / "cellar.db"
 class CellarDatabase:
     """Administra la base de datos local SQLite de la cava de barricas."""
 
-    def __init__(self, db_path: Optional[Path] = None):
+    def __init__(self, db_path: Optional[Union[Path, str]] = None):
         self.db_path = db_path or DB_PATH_DEFAULT
-        self._mem_conn: Optional[sqlite3.Connection] = None
-        if str(self.db_path) == ":memory:":
-            self._mem_conn = sqlite3.connect(":memory:")
-            self._mem_conn.row_factory = sqlite3.Row
+        self._conn = sqlite3.connect(str(self.db_path), check_same_thread=False)
+        self._conn.row_factory = sqlite3.Row
         self._init_db()
         self._seed_if_empty()
 
     def get_connection(self) -> sqlite3.Connection:
-        if self._mem_conn is not None:
-            return self._mem_conn
-        conn = sqlite3.connect(str(self.db_path))
-        conn.row_factory = sqlite3.Row
-        return conn
+        return self._conn
+
+    def close(self) -> None:
+        if self._conn is not None:
+            self._conn.close()
 
     def _init_db(self) -> None:
         with self.get_connection() as conn:
