@@ -66,6 +66,9 @@ class Barrica:
     dias_sin_ouillage: int
     merma_acumulada_l: float
     estado: str
+    cuba_origen_id: str = "CUB-12"
+    cuba_relleno_nodriza: str = "NOD-01"
+    tipo_vino_relleno: str = "Vino Gota Homólogo"
     notas_enologo: str = ""
 
     def to_dict(self) -> Dict[str, Any]:

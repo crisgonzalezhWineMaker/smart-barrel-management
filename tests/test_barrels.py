@@ -22,6 +22,9 @@ class TestSmartBarrelCopilot(unittest.TestCase):
         # Crear base de datos temporal en memoria
         self.db = CellarDatabase(db_path=Path(":memory:"))
 
+    def tearDown(self):
+        self.db.close()
+
     def test_database_seed_36_barricas(self):
         barricas = self.db.obtener_todas()
         self.assertEqual(len(barricas), 36)

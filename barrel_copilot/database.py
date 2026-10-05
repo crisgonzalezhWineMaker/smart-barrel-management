@@ -56,9 +56,22 @@ class CellarDatabase:
                     dias_sin_ouillage INTEGER NOT NULL,
                     merma_acumulada_l REAL NOT NULL,
                     estado TEXT NOT NULL,
+                    cuba_origen_id TEXT DEFAULT 'CUB-12',
+                    cuba_relleno_nodriza TEXT DEFAULT 'NOD-01',
+                    tipo_vino_relleno TEXT DEFAULT 'Vino Gota Homólogo',
                     notas_enologo TEXT DEFAULT ''
                 );
             """)
+            # Migración defensiva en caso de que la tabla ya exista
+            for col_def in [
+                "cuba_origen_id TEXT DEFAULT 'CUB-12'",
+                "cuba_relleno_nodriza TEXT DEFAULT 'NOD-01'",
+                "tipo_vino_relleno TEXT DEFAULT 'Vino Gota Homólogo'"
+            ]:
+                try:
+                    conn.execute(f"ALTER TABLE barricas ADD COLUMN {col_def};")
+                except sqlite3.OperationalError:
+                    pass
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS registro_operaciones (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -184,4 +197,29 @@ class CellarDatabase:
                 INSERT INTO registro_operaciones (barrica_id, fecha, tipo_operacion, so2_agregado_g, observaciones)
                 VALUES (?, ?, 'sulfitado', ?, ?);
             """, (barrica_id, hoy, gramos_k2s2o5, f"Ajustado a {nuevo_so2} mg/L SO2 libre"))
+            return True
+
+    def agregar_barrica(self, b: Dict[str, Any]) -> bool:
+        """Permite crear e insertar una nueva barrica en la cava."""
+        hoy = datetime.now().strftime("%Y-%m-%d")
+        with self.get_connection() as conn:
+            conn.execute("""
+                INSERT INTO barricas (
+                    id, rack, posicion_x, posicion_y, toneleria, origen_roble, tostado,
+                    capacidad_l, ano_compra, ano_uso, vino_contenido, cosecha, lote,
+                    ph, so2_libre_mg_l, fecha_ultimo_ouillage, dias_sin_ouillage,
+                    merma_acumulada_l, estado, cuba_origen_id, cuba_relleno_nodriza,
+                    tipo_vino_relleno, notas_enologo
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+            """, (
+                b["id"], b.get("rack", "Rack A"), int(b.get("posicion_x", 1)), int(b.get("posicion_y", 1)),
+                b.get("toneleria", "Taransaud"), b.get("origen_roble", "Roble Francés (Allier)"),
+                b.get("tostado", "Medio (M)"), float(b.get("capacidad_l", 225.0)), int(b.get("ano_compra", 2026)),
+                int(b.get("ano_uso", 1)), b.get("vino_contenido", "Cabernet Sauvignon"), int(b.get("cosecha", 2026)),
+                b.get("lote", "LOTE-01"), float(b.get("ph", 3.60)), float(b.get("so2_libre_mg_l", 32.0)),
+                b.get("fecha_ultimo_ouillage", hoy), int(b.get("dias_sin_ouillage", 0)),
+                float(b.get("merma_acumulada_l", 0.0)), b.get("estado", "Óptimo"),
+                b.get("cuba_origen_id", "CUB-12"), b.get("cuba_relleno_nodriza", "NOD-01"),
+                b.get("tipo_vino_relleno", "Vino Gota Homólogo"), b.get("notas_enologo", "")
+            ))
             return True

@@ -3,13 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Smart Barrel Copilot · Intelligent Oak Aging & QR Traceability</title>
+  <title>Smart Barrel Copilot · Intelligent Oak Aging & QR Traceability v1.1</title>
   <style>
     :root {
       --bg: #08070b;
+      --bg-gradient: radial-gradient(circle at 50% -15%, #2a151b 0%, var(--bg) 65%);
       --card-bg: rgba(24, 18, 22, 0.76);
       --card-border: rgba(255, 170, 90, 0.12);
       --card-hover: rgba(255, 170, 90, 0.25);
+      --card-inner: rgba(0, 0, 0, 0.35);
+      --input-bg: rgba(255, 255, 255, 0.05);
       --text: #f5f5f7;
       --text-muted: #958e94;
       --oak-amber: #ff9f0a;
@@ -20,31 +23,48 @@
       --radius: 18px;
     }
 
+    body.light-mode {
+      --bg: #f8f6f4;
+      --bg-gradient: radial-gradient(circle at 50% -15%, #fceade 0%, #f8f6f4 60%);
+      --card-bg: rgba(255, 255, 255, 0.86);
+      --card-border: rgba(0, 0, 0, 0.08);
+      --card-hover: rgba(255, 159, 10, 0.35);
+      --card-inner: rgba(0, 0, 0, 0.035);
+      --input-bg: rgba(0, 0, 0, 0.05);
+      --text: #1d1b1e;
+      --text-muted: #6e676d;
+      --oak-amber: #d97706;
+      --oak-glow: rgba(217, 119, 6, 0.2);
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
-      background: radial-gradient(circle at 50% -15%, #2a151b 0%, var(--bg) 65%);
+      background: var(--bg-gradient);
       color: var(--text);
       min-height: 100vh;
-      padding: 32px 24px;
+      padding: 36px 32px;
       -webkit-font-smoothing: antialiased;
+      transition: background 0.3s ease, color 0.3s ease;
     }
 
-    .container { max-width: 1260px; margin: 0 auto; }
+    .container { max-width: 1400px; margin: 0 auto; }
 
     header {
       display: flex;
       justify-content: space-between;
-      align-items: flex-end;
+      align-items: center;
       padding-bottom: 24px;
       border-bottom: 1px solid var(--card-border);
       margin-bottom: 28px;
+      flex-wrap: wrap;
+      gap: 16px;
     }
     .brand h1 {
       font-size: 2.3rem;
       font-weight: 700;
       letter-spacing: -0.03em;
-      background: linear-gradient(135deg, #fff 40%, #ffc078 100%);
+      background: linear-gradient(135deg, var(--text) 40%, #ffc078 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -66,6 +86,38 @@
       gap: 6px;
     }
 
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .btn-action-small {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+    .btn-action-small:hover {
+      border-color: var(--oak-amber);
+      transform: translateY(-1px);
+    }
+    .btn-action-small.primary {
+      background: var(--oak-amber);
+      color: #08070b;
+      border: none;
+      box-shadow: 0 4px 14px var(--oak-glow);
+    }
+
     /* Filter Pills */
     .filter-bar {
       display: flex;
@@ -74,7 +126,7 @@
       margin-bottom: 28px;
     }
     .filter-btn {
-      background: rgba(255, 255, 255, 0.05);
+      background: var(--card-inner);
       border: 1px solid var(--card-border);
       color: var(--text-muted);
       padding: 8px 18px;
@@ -85,8 +137,8 @@
       transition: all 0.2s ease;
     }
     .filter-btn:hover {
-      background: rgba(255, 255, 255, 0.1);
-      color: #fff;
+      border-color: var(--oak-amber);
+      color: var(--text);
     }
     .filter-btn.active {
       background: rgba(255, 159, 10, 0.2);
@@ -100,14 +152,11 @@
       grid-template-columns: repeat(12, 1fr);
       gap: 24px;
     }
-    .col-4 { grid-column: span 4; }
     .col-7 { grid-column: span 7; }
-    .col-8 { grid-column: span 8; }
     .col-5 { grid-column: span 5; }
-    .col-12 { grid-column: span 12; }
 
-    @media (max-width: 950px) {
-      .col-4, .col-5, .col-7, .col-8 { grid-column: span 12; }
+    @media (max-width: 1024px) {
+      .col-7, .col-5 { grid-column: span 12; }
     }
 
     .card {
@@ -117,8 +166,11 @@
       -webkit-backdrop-filter: blur(24px);
       border-radius: var(--radius);
       padding: 24px;
-      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
       transition: all 0.2s ease;
+    }
+    .card:hover {
+      border-color: var(--card-hover);
     }
     .card-title {
       font-size: 1.15rem;
@@ -141,11 +193,11 @@
     .rack-header {
       font-size: 0.95rem;
       font-weight: 600;
-      color: #ffc078;
+      color: var(--oak-amber);
       margin-bottom: 12px;
       display: flex;
       justify-content: space-between;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      border-bottom: 1px solid var(--card-border);
       padding-bottom: 6px;
     }
     .barrel-grid {
@@ -157,10 +209,10 @@
       .barrel-grid { grid-template-columns: repeat(3, 1fr); }
     }
 
-    /* Barrel Icon Button */
+    /* Barrel Item */
     .barrel-item {
-      background: rgba(0, 0, 0, 0.4);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: var(--card-inner);
+      border: 1px solid var(--card-border);
       border-radius: 14px;
       padding: 12px 8px;
       text-align: center;
@@ -172,7 +224,7 @@
       transform: translateY(-2px);
       border-color: var(--oak-amber);
       background: rgba(255, 159, 10, 0.08);
-      box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.3);
     }
     .barrel-item.selected {
       border: 2px solid var(--oak-amber);
@@ -200,7 +252,7 @@
     .barrel-code {
       font-size: 0.78rem;
       font-weight: 700;
-      color: #f5f5f7;
+      color: var(--text);
       font-family: ui-monospace, monospace;
     }
     .barrel-cooper {
@@ -214,9 +266,8 @@
 
     /* Inspector Drawer */
     .inspector-card {
-      background: rgba(30, 20, 25, 0.85);
       border: 1px solid var(--oak-amber);
-      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.5);
     }
     .qr-container {
       background: #ffffff;
@@ -228,62 +279,140 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.15);
     }
     .qr-container svg { width: 100%; height: 100%; }
+
+    .trace-box {
+      background: var(--card-inner);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+    }
+    .trace-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 700;
+      color: var(--oak-amber);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
 
     .spec-table {
       width: 100%;
       border-collapse: collapse;
       font-size: 0.85rem;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
     .spec-table td {
-      padding: 8px 4px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 7px 4px;
+      border-bottom: 1px solid var(--card-border);
     }
     .spec-label { color: var(--text-muted); }
-    .spec-val { text-align: right; font-weight: 600; color: #fff; }
+    .spec-val { text-align: right; font-weight: 600; color: var(--text); }
 
     .btn {
       background: var(--oak-amber);
       color: #08070b;
       border: none;
-      padding: 10px 16px;
-      font-size: 0.88rem;
+      padding: 12px 16px;
+      font-size: 0.9rem;
       font-weight: 700;
       border-radius: 10px;
       cursor: pointer;
-      width: 100%;
-      margin-top: 8px;
+      box-shadow: 0 4px 16px var(--oak-glow);
       transition: all 0.2s;
+      width: 100%;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
     .btn:hover {
       transform: translateY(-1px);
-      box-shadow: 0 4px 16px var(--oak-glow);
+      box-shadow: 0 6px 22px var(--oak-glow);
     }
     .btn-outline {
       background: transparent;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: #fff;
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      box-shadow: none;
     }
     .btn-outline:hover {
-      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--oak-amber);
+      background: var(--card-inner);
     }
 
-    /* Slider Group */
-    .form-group { margin-bottom: 16px; }
+    /* Modal Apple Glass */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+    .modal-content {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      max-width: 650px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 28px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--card-border);
+    }
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .form-group { margin-bottom: 14px; }
     .form-header {
       display: flex;
       justify-content: space-between;
-      font-size: 0.85rem;
+      font-size: 0.88rem;
       margin-bottom: 6px;
-      color: #d1cbd0;
+      color: var(--text);
     }
     .form-val {
-      font-family: ui-monospace, monospace;
+      font-family: ui-monospace, SFMono-Regular, monospace;
       font-weight: 600;
-      color: #ffc078;
+      color: var(--oak-amber);
     }
+    select, input[type="text"], input[type="number"] {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 0.92rem;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    select:focus, input:focus { border-color: var(--oak-amber); }
+
     input[type="range"] {
       width: 100%;
       height: 6px;
@@ -291,13 +420,16 @@
       border-radius: 999px;
       outline: none;
       -webkit-appearance: none;
+      appearance: none;
     }
+    body.light-mode input[type="range"] { background: rgba(0, 0, 0, 0.1); }
     input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
-      width: 16px;
-      height: 16px;
+      width: 18px;
+      height: 18px;
       border-radius: 50%;
       background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
       cursor: pointer;
       border: 2px solid var(--oak-amber);
     }
@@ -318,47 +450,42 @@
   <!-- Header -->
   <header>
     <div class="brand">
-      <span class="badge-pill">🪵 Smart Barrel Copilot v1.0</span>
-      <h1>Intelligent Oak Cellar & QR Traceability</h1>
+      <span class="badge-pill">🪵 Smart Barrel Copilot v1.1</span>
+      <h1>Intelligent Oak Cellar & Traceability</h1>
       <p>Diseñado por Cristián González Huenchún · Ingeniero Agrónomo & Magíster (c) Enología, U. de Chile</p>
     </div>
-    <div style="text-align: right;">
-      <span style="font-size: 0.85rem; color: #958e94;">36 Barricas Activas · Cava Subterránea</span>
+    <div class="header-actions">
+      <button class="btn-action-small primary" onclick="abrirModalNuevaBarrica()">
+        <span>➕</span> Añadir Barrica
+      </button>
+      <button class="btn-action-small" id="themeBtn" onclick="toggleTheme()" title="Cambiar tema">
+        <span id="themeIcon">☀️</span>
+        <span id="themeText">Modo Claro</span>
+      </button>
+      <span style="font-size: 0.85rem; color: var(--text-muted);">Cava Climatizada · QR Activo</span>
     </div>
   </header>
 
-  <!-- Filter Pills -->
+  <!-- Barra de Filtros Rápidos -->
   <div class="filter-bar">
-    <button class="filter-btn active" onclick="filtrar('todas')">Todas las Barricas (36)</button>
+    <button class="filter-btn active" onclick="filtrar('todas')">Todas las Barricas (<span id="count-total">36</span>)</button>
     <button class="filter-btn" onclick="filtrar('ouillage')">⚠️ Requieren Ouillage (<span id="count-ouillage">4</span>)</button>
     <button class="filter-btn" onclick="filtrar('so2')">🚨 Alerta SO₂ Bajo (<span id="count-so2">2</span>)</button>
-    <button class="filter-btn" onclick="filtrar('primer_uso')">🪵 1er Uso (Nuevas)</button>
-    <button class="filter-btn" onclick="filtrar('frances')">🇫🇷 Roble Francés (30)</button>
+    <button class="filter-btn" onclick="filtrar('primer_uso')">✨ 1er Uso Nuevas (<span id="count-nuevas">12</span>)</button>
+    <button class="filter-btn" onclick="filtrar('frances')">🇫🇷 Roble Francés (<span id="count-frances">30</span>)</button>
   </div>
 
   <div class="grid">
-    <!-- Cava 2D (Columna 7) -->
+    <!-- Mapa 2D de la Cava (Columna 7) -->
     <div class="col-7 card">
       <div class="card-title">
-        <span>Mapa 2D de la Cava de Crianza</span>
-        <span style="font-size: 0.8rem; color: #ffc078;">Haz clic en una barrica para inspeccionar</span>
+        <span>Mapa 2D de Cava · Distribución de Racks</span>
+        <span style="font-size:0.82rem; color:var(--oak-amber);">Haz clic en cualquier barrica para inspeccionar</span>
       </div>
-      <p class="card-subtitle">Distribución espacial por naves y niveles de altura. Códigos de color indican estado microbiológico y de llenado.</p>
+      <p class="card-subtitle">Visualización espacial interactiva por niveles de altura y columnas.</p>
 
-      <div class="rack-section">
-        <div class="rack-header">
-          <span>Rack A · Nave Principal (Barricas #001 a #018)</span>
-          <span>Nivel 3 (Alto) · Nivel 2 · Nivel 1 (Piso)</span>
-        </div>
-        <div class="barrel-grid" id="grid-rack-a"></div>
-      </div>
-
-      <div class="rack-section">
-        <div class="rack-header">
-          <span>Rack B · Cava Subterránea (Barricas #019 a #036)</span>
-          <span>Nivel 3 (Alto) · Nivel 2 · Nivel 1 (Piso)</span>
-        </div>
-        <div class="barrel-grid" id="grid-rack-b"></div>
+      <div id="racks-container">
+        <!-- Generado dinámicamente -->
       </div>
     </div>
 
@@ -376,26 +503,38 @@
           <!-- SVG QR Dinámico -->
         </div>
 
+        <!-- Trazabilidad de Bodega -->
+        <div class="trace-box">
+          <div class="trace-title">🏷️ Trazabilidad de Origen & Partida</div>
+          <table class="spec-table" style="margin-bottom: 0;">
+            <tr><td class="spec-label">Cuba de Origen</td><td class="spec-val" id="insp-cuba-origen" style="color:var(--oak-amber);">CUB-12 (Cabernet Sauvignon)</td></tr>
+            <tr><td class="spec-label">Lote Enológico</td><td class="spec-val" id="insp-lote">LOTE-CS-VIK-01</td></tr>
+            <tr><td class="spec-label">Cuba Nodriza Relleno</td><td class="spec-val" id="insp-cuba-relleno" style="color:#64b5f6;">NOD-01 (Partida Homóloga)</td></tr>
+            <tr><td class="spec-label">Tipo Vino de Relleno</td><td class="spec-val" id="insp-tipo-relleno">Vino Gota Homólogo</td></tr>
+          </table>
+        </div>
+
+        <!-- Ficha Técnica de Madera y Analítica -->
         <table class="spec-table">
           <tr><td class="spec-label">Tonelería</td><td class="spec-val" id="insp-toneleria">Taransaud</td></tr>
           <tr><td class="spec-label">Bosque & Grano</td><td class="spec-val" id="insp-bosque">Roble Francés (Allier)</td></tr>
           <tr><td class="spec-label">Tostado & Capacidad</td><td class="spec-val" id="insp-tostado">Medio Plus (M+) · 225 L</td></tr>
           <tr><td class="spec-label">Año de Compra / Uso</td><td class="spec-val" id="insp-uso">2026 (1er uso)</td></tr>
           <tr><td class="spec-label">Último Relleno (Ouillage)</td><td class="spec-val" id="insp-ouillage-fecha">Hace 26 días (Crítico)</td></tr>
-          <tr><td class="spec-label">Merma Acumulada</td><td class="spec-val" id="insp-merma" style="color:#ff9f0a;">1.35 L evaporados</td></tr>
+          <tr><td class="spec-label">Merma Acumulada</td><td class="spec-val" id="insp-merma" style="color:var(--oak-amber);">1.35 L evaporados</td></tr>
           <tr><td class="spec-label">SO₂ Libre / Molecular</td><td class="spec-val" id="insp-so2">30.0 mg/L (0.54 mg/L)</td></tr>
           <tr><td class="spec-label">pH del Vino</td><td class="spec-val" id="insp-ph">3.62</td></tr>
         </table>
 
-        <button class="btn" onclick="ejecutarOuillage()">💧 Registrar Ouillage (Relleno Completo)</button>
-        <button class="btn btn-outline" onclick="dosificarSO2()">🧪 Micro-Adición de SO₂ (K₂S₂O₅)</button>
-        <button class="btn btn-outline" onclick="imprimirEtiqueta()">🏷️ Imprimir Etiqueta QR Metálica</button>
+        <button class="btn" onclick="abrirModalOuillage()">💧 Registrar Ouillage (Relleno Completo)</button>
+        <button class="btn btn-outline" onclick="abrirModalSO2()">🧪 Micro-Adición de SO₂ (K₂S₂O₅)</button>
+        <button class="btn btn-outline" onclick="imprimirEtiqueta()">🏷️ Imprimir Etiqueta QR Láser</button>
       </div>
 
       <!-- Simulador Microclimático -->
       <div class="card" style="margin-top: 24px;">
         <div class="card-title"><span>Simulador 'Part des Anges' (Cava)</span></div>
-        <p class="card-subtitle">Calcula la tasa de transpiración y costo económico de merma.</p>
+        <p class="card-subtitle">Calcula la tasa de transpiración y volumen mensual de merma.</p>
 
         <div class="form-group">
           <div class="form-header">
@@ -413,123 +552,356 @@
           <input type="range" id="input-cava-temp" min="11" max="21" step="0.5" value="15.5" oninput="simularCava()">
         </div>
 
-        <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 10px; font-size: 0.85rem; line-height: 1.5;">
-          <div>Pérdida promedio por barrica: <b id="out-tasa-dia" style="color:#ffc078;">27.4 mL/día</b></div>
-          <div>Merma mensual total (36 barricas): <b id="out-merma-total" style="color:#e0284f;">29.9 Litros/mes</b></div>
+        <div style="background: var(--card-inner); padding: 14px; border-radius: 12px; font-size: 0.85rem; line-height: 1.6; border: 1px solid var(--card-border);">
+          <div>Pérdida estimada por barrica: <b id="out-tasa-dia" style="color:var(--oak-amber);">27.4 mL/día</b></div>
+          <div>Merma mensual total en la cava: <b id="out-merma-total" style="color:var(--wine-ruby);">29.9 Litros/mes</b></div>
         </div>
       </div>
     </div>
   </div>
 
   <footer class="footer">
-    Smart Barrel Copilot · SaaS Enológico de Trazabilidad por QR · Universidad de Chile · 2026
+    Smart Barrel Copilot v1.1 · SaaS Enológico de Crianza y Trazabilidad por QR · Cristián González Huenchún · 2026
   </footer>
 </div>
 
+<!-- Modal: Añadir Nueva Barrica -->
+<div class="modal-overlay" id="modalNuevaBarrica">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 style="font-size: 1.25rem;">➕ Añadir Nueva Barrica a la Cava</h3>
+      <button class="modal-close" onclick="cerrarModalNuevaBarrica()">×</button>
+    </div>
+
+    <form onsubmit="guardarNuevaBarrica(event)">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+        <div class="form-group">
+          <label class="form-header"><span>Código / ID Barrica</span></label>
+          <input type="text" id="nueva-id" required placeholder="Ej: BAR-2026-037">
+        </div>
+        <div class="form-group">
+          <label class="form-header"><span>Rack / Ubicación</span></label>
+          <select id="nueva-rack">
+            <option value="Rack A (Nave Principal)">Rack A (Nave Principal)</option>
+            <option value="Rack B (Cava Subterránea)">Rack B (Cava Subterránea)</option>
+            <option value="Rack C (Cava Icono)">Rack C (Cava Icono)</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px;">
+        <div class="form-group">
+          <label class="form-header"><span>Nivel Altura</span></label>
+          <select id="nueva-y">
+            <option value="3">Nivel 3 (Alto)</option>
+            <option value="2">Nivel 2 (Medio)</option>
+            <option value="1">Nivel 1 (Piso)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-header"><span>Columna (1-6)</span></label>
+          <input type="number" id="nueva-x" min="1" max="6" value="1" required>
+        </div>
+        <div class="form-group">
+          <label class="form-header"><span>Capacidad (L)</span></label>
+          <select id="nueva-capacidad">
+            <option value="225">225 L (Bordelesa)</option>
+            <option value="300">300 L (Borgoñona)</option>
+            <option value="500">500 L (Demi-Muid)</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+        <div class="form-group">
+          <label class="form-header"><span>Tonelería</span></label>
+          <select id="nueva-toneleria">
+            <option value="Taransaud">Taransaud</option>
+            <option value="Seguin Moreau">Seguin Moreau</option>
+            <option value="Radoux">Radoux</option>
+            <option value="Sylvain">Sylvain</option>
+            <option value="François Frères">François Frères</option>
+            <option value="Damy">Damy</option>
+            <option value="Canton">Canton</option>
+            <option value="Nadalié">Nadalié</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-header"><span>Origen del Roble & Bosque</span></label>
+          <select id="nueva-bosque">
+            <option value="Roble Francés (Allier)">Roble Francés (Allier)</option>
+            <option value="Roble Francés (Tronçais)">Roble Francés (Tronçais)</option>
+            <option value="Roble Francés (Vosges)">Roble Francés (Vosges)</option>
+            <option value="Roble Francés (Nevers)">Roble Francés (Nevers)</option>
+            <option value="Roble Americano (Missouri)">Roble Americano (Missouri)</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+        <div class="form-group">
+          <label class="form-header"><span>Nivel de Tostado</span></label>
+          <select id="nueva-tostado">
+            <option value="Medio Plus (M+)">Medio Plus (M+)</option>
+            <option value="Medio (M)">Medio (M)</option>
+            <option value="Ligero (L)">Ligero (L)</option>
+            <option value="Fuerte (H)">Fuerte (H)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-header"><span>Año / Número de Uso</span></label>
+          <select id="nueva-uso">
+            <option value="1">1er uso (Nueva · 2026)</option>
+            <option value="2">2do uso (2025)</option>
+            <option value="3">3er uso (2024)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-header"><span>Vino Contenido & Cuartel</span></label>
+        <input type="text" id="nueva-vino" required placeholder="Ej: Cabernet Sauvignon (Cuartel 12 - VIK)">
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+        <div class="form-group">
+          <label class="form-header"><span>Cuba de Origen</span></label>
+          <input type="text" id="nueva-cuba-origen" required value="CUB-12">
+        </div>
+        <div class="form-group">
+          <label class="form-header"><span>Cuba Nodriza para Relleno</span></label>
+          <input type="text" id="nueva-cuba-relleno" required value="NOD-01">
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+        <div class="form-group">
+          <label class="form-header"><span>Tipo de Vino de Relleno</span></label>
+          <select id="nueva-tipo-relleno">
+            <option value="Vino Gota Homólogo">Vino Gota Homólogo</option>
+            <option value="Vino Prensa Seleccionada">Vino Prensa Seleccionada</option>
+            <option value="Topping Wine Filtrado">Topping Wine Filtrado</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-header"><span>Lote Enológico</span></label>
+          <input type="text" id="nueva-lote" required value="LOTE-CS-2026">
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+        <div class="form-group">
+          <label class="form-header"><span>pH Inicial</span></label>
+          <input type="number" id="nueva-ph" min="3.00" max="4.20" step="0.01" value="3.60" required>
+        </div>
+        <div class="form-group">
+          <label class="form-header"><span>SO₂ Libre Inicial (mg/L)</span></label>
+          <input type="number" id="nueva-so2" min="10" max="60" step="1" value="32" required>
+        </div>
+      </div>
+
+      <button type="submit" class="btn">💾 Guardar Barrica & Generar Código QR</button>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: Registrar Ouillage -->
+<div class="modal-overlay" id="modalOuillage">
+  <div class="modal-content" style="max-width: 520px;">
+    <div class="modal-header">
+      <h3 style="font-size: 1.25rem;">💧 Registrar Relleno (Ouillage)</h3>
+      <button class="modal-close" onclick="cerrarModalOuillage()">×</button>
+    </div>
+    <div id="ouillage-modal-desc" style="font-size: 0.92rem; line-height: 1.6; color: var(--text);">
+      <!-- Se llena dinámicamente -->
+    </div>
+    <div class="form-group" style="margin-top: 16px;">
+      <label class="form-header"><span>Volumen Efectivo Incorporado (Litros)</span></label>
+      <input type="number" id="input-ouillage-vol" min="0.1" max="10.0" step="0.05" value="1.35">
+    </div>
+    <div style="display: flex; gap: 12px; margin-top: 20px;">
+      <button class="btn" onclick="confirmarOuillage()" style="margin-top: 0;">✅ Confirmar Relleno</button>
+      <button class="btn-action-small" onclick="cerrarModalOuillage()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Micro-Adición de SO2 -->
+<div class="modal-overlay" id="modalSO2">
+  <div class="modal-content" style="max-width: 520px;">
+    <div class="modal-header">
+      <h3 style="font-size: 1.25rem;">🧪 Micro-Dosificación de Metabisulfito</h3>
+      <button class="modal-close" onclick="cerrarModalSO2()">×</button>
+    </div>
+    <div id="so2-modal-desc" style="font-size: 0.92rem; line-height: 1.6; color: var(--text);">
+      <!-- Se llena dinámicamente -->
+    </div>
+    <div class="form-group" style="margin-top: 16px;">
+      <label class="form-header"><span>SO₂ Libre Objetivo (mg/L)</span></label>
+      <input type="number" id="input-so2-target" min="20" max="50" step="1" value="32" oninput="calcularGramosSO2()">
+    </div>
+    <div style="background: var(--card-inner); padding: 12px; border-radius: 10px; margin-top: 12px; font-size: 0.88rem; border: 1px solid var(--card-border);">
+      Dosis calculada de K₂S₂O₅: <b id="out-so2-gramos" style="color:var(--oak-amber);">6.30 gramos</b> para 225 L.
+    </div>
+    <div style="display: flex; gap: 12px; margin-top: 20px;">
+      <button class="btn" onclick="confirmarSO2()" style="margin-top: 0;">✅ Aplicar Sulfitado</button>
+      <button class="btn-action-small" onclick="cerrarModalSO2()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <script>
-  // Dataset de 36 Barricas
-  const BARRICAS = [];
+  // Inicialización de Barricas por defecto
   const tonelerias = ["Taransaud", "Seguin Moreau", "Radoux", "Sylvain", "François Frères", "Canton"];
   const bosques = ["Roble Francés (Allier)", "Roble Francés (Tronçais)", "Roble Francés (Vosges)", "Roble Francés (Nevers)", "Roble Francés (Allier)", "Roble Americano (Missouri)"];
   const tostados = ["Medio Plus (M+)", "Medio (M)", "Medio (M)", "Medio Plus (M+)", "Ligero (L)", "Medio (M)"];
   const vinos = [
-    { n: "Cabernet Sauvignon (Cuartel 12 - VIK)", ph: 3.62, so2: 32.0 },
-    { n: "Carmenere Selección (Cuartel 05 - VIK)", ph: 3.68, so2: 30.0 },
-    { n: "Cabernet Sauvignon Gran Reserva (El Principal)", ph: 3.58, so2: 34.0 },
-    { n: "Chardonnay Fermentado en Barrica (El Principal)", ph: 3.32, so2: 28.0 },
-    { n: "Syrah Alta Expresión (Cachapoal)", ph: 3.65, so2: 31.0 }
+    { n: "Cabernet Sauvignon (Cuartel 12 - VIK)", cuba: "CUB-12", nodriza: "NOD-01 (Partida Homóloga)", tipo: "Vino Gota Homólogo", lote: "LOTE-CS-VIK-01", ph: 3.62, so2: 32.0 },
+    { n: "Carmenere Selección (Cuartel 05 - VIK)", cuba: "CUB-05", nodriza: "NOD-02 (Barrica Madre)", tipo: "Vino Gota Homólogo", lote: "LOTE-CARM-VIK-03", ph: 3.68, so2: 30.0 },
+    { n: "Cabernet Sauvignon Gran Reserva (El Principal)", cuba: "CUB-08", nodriza: "NOD-03 (Partida Principal)", tipo: "Vino Prensa Seleccionada", lote: "LOTE-CS-PRIN-02", ph: 3.58, so2: 34.0 },
+    { n: "Chardonnay Fermentado en Barrica (El Principal)", cuba: "CUB-04", nodriza: "NOD-04 (Chardonnay Gota)", tipo: "Topping Wine Filtrado", lote: "LOTE-CHARD-01", ph: 3.32, so2: 28.0 },
+    { n: "Syrah Alta Expresión (Cachapoal)", cuba: "CUB-18", nodriza: "NOD-05 (Syrah Reserva)", tipo: "Vino Gota Homólogo", lote: "LOTE-SYR-04", ph: 3.65, so2: 31.0 }
   ];
 
-  let idx = 1;
-  for (let r of ["Rack A", "Rack B"]) {
-    for (let y = 3; y >= 1; y--) { // Nivel 3 arriba, 1 piso
-      for (let x = 1; x <= 6; x++) {
-        const tIdx = (idx - 1) % tonelerias.length;
-        const vIdx = (idx - 1) % vinos.length;
-        const anoUso = idx % 3 === 0 ? 1 : (idx % 2 === 0 ? 2 : 3);
-        const anoCompra = 2026 - (anoUso - 1);
+  function generarDefaultBarricas() {
+    const list = [];
+    let idx = 1;
+    for (let r of ["Rack A (Nave Principal)", "Rack B (Cava Subterránea)"]) {
+      for (let y = 3; y >= 1; y--) {
+        for (let x = 1; x <= 6; x++) {
+          const tIdx = (idx - 1) % tonelerias.length;
+          const v = vinos[(idx - 1) % vinos.length];
+          const anoUso = idx % 3 === 0 ? 1 : (idx % 2 === 0 ? 2 : 3);
+          const anoCompra = 2026 - (anoUso - 1);
 
-        let dias = 8;
-        let estado = "Óptimo";
-        let merma = 0.28;
-        let so2 = vinos[vIdx].so2;
+          let dias = 8;
+          let estado = "Óptimo";
+          let merma = 0.28;
+          let so2 = v.so2;
 
-        if ([5, 14, 23, 31].includes(idx)) {
-          dias = 26;
-          estado = "Requiere Ouillage";
-          merma = 1.35;
-        } else if ([8, 27].includes(idx)) {
-          dias = 12;
-          so2 = 18.0;
-          estado = "Alerta SO₂ Bajo";
-          merma = 0.40;
+          if ([5, 14, 23, 31].includes(idx)) {
+            dias = 26;
+            estado = "Requiere Ouillage";
+            merma = 1.35;
+          } else if ([8, 27].includes(idx)) {
+            dias = 12;
+            so2 = 18.0;
+            estado = "Alerta SO₂ Bajo";
+            merma = 0.40;
+          }
+
+          list.push({
+            id: `BAR-${anoCompra}-${String(idx).padStart(3, '0')}`,
+            num: idx,
+            rack: r,
+            x: x,
+            y: y,
+            toneleria: tonelerias[tIdx],
+            bosque: bosques[tIdx],
+            tostado: tostados[tIdx],
+            capacidad: 225,
+            anoUso: anoUso,
+            anoCompra: anoCompra,
+            vino: v.n,
+            cubaOrigen: v.cuba,
+            cubaRelleno: v.nodriza,
+            tipoRelleno: v.tipo,
+            lote: v.lote,
+            ph: v.ph,
+            so2: so2,
+            diasOuillage: dias,
+            merma: merma,
+            estado: estado
+          });
+          idx++;
         }
-
-        BARRICAS.push({
-          id: `BAR-${anoCompra}-${String(idx).padStart(3, '0')}`,
-          num: idx,
-          rack: r,
-          x: x,
-          y: y,
-          toneleria: tonelerias[tIdx],
-          bosque: bosques[tIdx],
-          tostado: tostados[tIdx],
-          anoUso: anoUso,
-          anoCompra: anoCompra,
-          vino: vinos[vIdx].n,
-          ph: vinos[vIdx].ph,
-          so2: so2,
-          diasOuillage: dias,
-          merma: merma,
-          estado: estado
-        });
-        idx++;
       }
     }
+    return list;
   }
 
+  function obtenerBarricas() {
+    const data = localStorage.getItem('smart_barrel_data_v1');
+    if (data) {
+      try { return JSON.parse(data); } catch (e) { return generarDefaultBarricas(); }
+    }
+    return generarDefaultBarricas();
+  }
+
+  function guardarBarricasStorage() {
+    localStorage.setItem('smart_barrel_data_v1', JSON.stringify(BARRICAS));
+  }
+
+  let BARRICAS = obtenerBarricas();
   let barricaSeleccionada = BARRICAS.find(b => b.estado === "Requiere Ouillage") || BARRICAS[0];
   let filtroActual = 'todas';
 
   function renderRacks() {
-    const gridA = document.getElementById('grid-rack-a');
-    const gridB = document.getElementById('grid-rack-b');
-    gridA.innerHTML = '';
-    gridB.innerHTML = '';
+    const container = document.getElementById('racks-container');
+    container.innerHTML = '';
 
+    // Agrupar por Rack
+    const racksMap = {};
     BARRICAS.forEach(b => {
-      // Filtrado
-      if (filtroActual === 'ouillage' && b.estado !== 'Requiere Ouillage') return;
-      if (filtroActual === 'so2' && b.estado !== 'Alerta SO₂ Bajo') return;
-      if (filtroActual === 'primer_uso' && b.anoUso !== 1) return;
-      if (filtroActual === 'frances' && !b.bosque.includes('Francés')) return;
-
-      const div = document.createElement('div');
-      div.className = `barrel-item ${b.id === barricaSeleccionada.id ? 'selected' : ''}`;
-      div.onclick = () => seleccionarBarrica(b.id);
-
-      let ledClass = 'led-ok';
-      if (b.estado === 'Requiere Ouillage') ledClass = 'led-warn';
-      else if (b.estado === 'Alerta SO₂ Bajo') ledClass = 'led-danger';
-
-      div.innerHTML = `
-        <span class="led-dot ${ledClass}"></span>
-        <span class="barrel-icon">🪵</span>
-        <div class="barrel-code">${b.id.replace('BAR-', '')}</div>
-        <div class="barrel-cooper">${b.toneleria}</div>
-      `;
-
-      if (b.rack === 'Rack A') gridA.appendChild(div);
-      else gridB.appendChild(div);
+      if (!racksMap[b.rack]) racksMap[b.rack] = [];
+      racksMap[b.rack].push(b);
     });
 
-    // Actualizar contadores
+    Object.keys(racksMap).forEach(rackNombre => {
+      const rackBarricas = racksMap[rackNombre];
+
+      const sec = document.createElement('div');
+      sec.className = 'rack-section';
+
+      const hdr = document.createElement('div');
+      hdr.className = 'rack-header';
+      hdr.innerHTML = `
+        <span>${rackNombre} (${rackBarricas.length} barricas)</span>
+        <span style="font-size:0.8rem; color:var(--text-muted);">Nivel 3 · Nivel 2 · Nivel 1</span>
+      `;
+      sec.appendChild(hdr);
+
+      const grid = document.createElement('div');
+      grid.className = 'barrel-grid';
+
+      rackBarricas.forEach(b => {
+        // Filtros
+        if (filtroActual === 'ouillage' && b.estado !== 'Requiere Ouillage') return;
+        if (filtroActual === 'so2' && b.estado !== 'Alerta SO₂ Bajo') return;
+        if (filtroActual === 'primer_uso' && b.anoUso !== 1) return;
+        if (filtroActual === 'frances' && !b.bosque.includes('Francés')) return;
+
+        const div = document.createElement('div');
+        div.className = `barrel-item ${b.id === barricaSeleccionada.id ? 'selected' : ''}`;
+        div.onclick = () => seleccionarBarrica(b.id);
+
+        let ledClass = 'led-ok';
+        if (b.estado === 'Requiere Ouillage') ledClass = 'led-warn';
+        else if (b.estado === 'Alerta SO₂ Bajo') ledClass = 'led-danger';
+
+        div.innerHTML = `
+          <span class="led-dot ${ledClass}"></span>
+          <span class="barrel-icon">🪵</span>
+          <div class="barrel-code">${b.id.replace('BAR-', '')}</div>
+          <div class="barrel-cooper">${b.toneleria}</div>
+        `;
+        grid.appendChild(div);
+      });
+
+      sec.appendChild(grid);
+      container.appendChild(sec);
+    });
+
+    // Contadores
+    document.getElementById('count-total').innerText = BARRICAS.length;
     document.getElementById('count-ouillage').innerText = BARRICAS.filter(b => b.estado === 'Requiere Ouillage').length;
     document.getElementById('count-so2').innerText = BARRICAS.filter(b => b.estado === 'Alerta SO₂ Bajo').length;
+    document.getElementById('count-nuevas').innerText = BARRICAS.filter(b => b.anoUso === 1).length;
+    document.getElementById('count-frances').innerText = BARRICAS.filter(b => b.bosque.includes('Francés')).length;
   }
 
   function seleccionarBarrica(id) {
-    barricaSeleccionada = BARRICAS.find(b => b.id === id);
+    barricaSeleccionada = BARRICAS.find(b => b.id === id) || BARRICAS[0];
     actualizarInspector();
     renderRacks();
   }
@@ -538,13 +910,19 @@
     const b = barricaSeleccionada;
     document.getElementById('insp-id').innerText = b.id;
     document.getElementById('insp-vino').innerText = b.vino;
+
+    document.getElementById('insp-cuba-origen').innerText = b.cubaOrigen || "CUB-12";
+    document.getElementById('insp-lote').innerText = b.lote || "LOTE-01";
+    document.getElementById('insp-cuba-relleno').innerText = b.cubaRelleno || "NOD-01 (Partida Homóloga)";
+    document.getElementById('insp-tipo-relleno').innerText = b.tipoRelleno || "Vino Gota Homólogo";
+
     document.getElementById('insp-toneleria').innerText = b.toneleria;
     document.getElementById('insp-bosque').innerText = b.bosque;
-    document.getElementById('insp-tostado').innerText = `${b.tostado} · 225 L`;
+    document.getElementById('insp-tostado').innerText = `${b.tostado} · ${b.capacidad || 225} L`;
     document.getElementById('insp-uso').innerText = `${b.anoCompra} (${b.anoUso}º uso)`;
     document.getElementById('insp-ouillage-fecha').innerText = `Hace ${b.diasOuillage} días`;
     document.getElementById('insp-merma').innerText = `${b.merma.toFixed(2)} L acumulados`;
-    
+
     const pka = 1.81;
     const so2Mol = (b.so2 / (1.0 + Math.pow(10, (b.ph - pka)))).toFixed(2);
     document.getElementById('insp-so2').innerText = `${b.so2} mg/L (${so2Mol} mg/L mol)`;
@@ -567,13 +945,10 @@
   }
 
   function generarQRSVG(id) {
-    // Generar SVG interactivo para la barrica
     const box = document.getElementById('qr-box');
-    const url = `http://localhost:8070/index.html?barrica=${id}`;
     box.innerHTML = `
       <svg viewBox="0 0 100 100" width="140" height="140" xmlns="http://www.w3.org/2000/svg">
         <rect width="100" height="100" fill="#ffffff" rx="8"/>
-        <!-- QR Patterns Estilizados -->
         <rect x="10" y="10" width="25" height="25" fill="#111118"/>
         <rect x="15" y="15" width="15" height="15" fill="#ffffff"/>
         <rect x="18" y="18" width="9" height="9" fill="#111118"/>
@@ -583,7 +958,6 @@
         <rect x="10" y="65" width="25" height="25" fill="#111118"/>
         <rect x="15" y="70" width="15" height="15" fill="#ffffff"/>
         <rect x="18" y="73" width="9" height="9" fill="#111118"/>
-        <!-- Bits aleatorios reproducibles -->
         <rect x="42" y="15" width="8" height="8" fill="#111118"/>
         <rect x="45" y="30" width="6" height="6" fill="#111118"/>
         <rect x="55" y="42" width="12" height="6" fill="#111118"/>
@@ -591,30 +965,138 @@
         <rect x="42" y="65" width="10" height="8" fill="#111118"/>
         <rect x="65" y="65" width="8" height="8" fill="#111118"/>
         <rect x="78" y="45" width="8" height="12" fill="#111118"/>
-        <text x="50" y="93" font-size="6" font-family="monospace" text-anchor="middle" fill="#888">${id}</text>
+        <text x="50" y="93" font-size="6" font-family="monospace" text-anchor="middle" fill="#555">${id}</text>
       </svg>
     `;
   }
 
-  function ejecutarOuillage() {
+  // Modales
+  function abrirModalNuevaBarrica() {
+    const proxNum = BARRICAS.length + 1;
+    document.getElementById('nueva-id').value = `BAR-2026-${String(proxNum).padStart(3, '0')}`;
+    document.getElementById('modalNuevaBarrica').style.display = 'flex';
+  }
+  function cerrarModalNuevaBarrica() {
+    document.getElementById('modalNuevaBarrica').style.display = 'none';
+  }
+
+  function guardarNuevaBarrica(e) {
+    e.preventDefault();
+    const id = document.getElementById('nueva-id').value.trim();
+    const rack = document.getElementById('nueva-rack').value;
+    const y = parseInt(document.getElementById('nueva-y').value);
+    const x = parseInt(document.getElementById('nueva-x').value);
+    const capacidad = parseFloat(document.getElementById('nueva-capacidad').value);
+    const toneleria = document.getElementById('nueva-toneleria').value;
+    const bosque = document.getElementById('nueva-bosque').value;
+    const tostado = document.getElementById('nueva-tostado').value;
+    const anoUso = parseInt(document.getElementById('nueva-uso').value);
+    const vino = document.getElementById('nueva-vino').value.trim();
+    const cubaOrigen = document.getElementById('nueva-cuba-origen').value.trim();
+    const cubaRelleno = document.getElementById('nueva-cuba-relleno').value.trim();
+    const tipoRelleno = document.getElementById('nueva-tipo-relleno').value;
+    const lote = document.getElementById('nueva-lote').value.trim();
+    const ph = parseFloat(document.getElementById('nueva-ph').value);
+    const so2 = parseFloat(document.getElementById('nueva-so2').value);
+
+    const nueva = {
+      id,
+      num: BARRICAS.length + 1,
+      rack,
+      x,
+      y,
+      toneleria,
+      bosque,
+      tostado,
+      capacidad,
+      anoUso,
+      anoCompra: 2026,
+      vino,
+      cubaOrigen,
+      cubaRelleno,
+      tipoRelleno,
+      lote,
+      ph,
+      so2,
+      diasOuillage: 0,
+      merma: 0.0,
+      estado: "Óptimo"
+    };
+
+    BARRICAS.push(nueva);
+    guardarBarricasStorage();
+    cerrarModalNuevaBarrica();
+    barricaSeleccionada = nueva;
+    renderRacks();
+    actualizarInspector();
+    alert(`🎉 ¡Barrica ${id} creada con éxito y agregada al rack "${rack}"!`);
+  }
+
+  function abrirModalOuillage() {
+    const b = barricaSeleccionada;
+    document.getElementById('ouillage-modal-desc').innerHTML = `
+      Se realizará el relleno técnico para eliminar la cámara de aire oxidativa en la barrica <b>${b.id}</b>.<br><br>
+      • <b>Cuba Nodriza asignada:</b> ${b.cubaRelleno}<br>
+      • <b>Tipo de vino:</b> ${b.tipoRelleno}<br>
+      • <b>Merma teórica acumulada:</b> ${b.merma.toFixed(2)} Litros.
+    `;
+    document.getElementById('input-ouillage-vol').value = b.merma > 0 ? b.merma.toFixed(2) : "0.50";
+    document.getElementById('modalOuillage').style.display = 'flex';
+  }
+  function cerrarModalOuillage() {
+    document.getElementById('modalOuillage').style.display = 'none';
+  }
+
+  function confirmarOuillage() {
+    const vol = parseFloat(document.getElementById('input-ouillage-vol').value);
     barricaSeleccionada.diasOuillage = 0;
     barricaSeleccionada.merma = 0.0;
     barricaSeleccionada.estado = barricaSeleccionada.so2 < 20 ? "Alerta SO₂ Bajo" : "Óptimo";
-    alert(`✅ Relleno (Ouillage) completado para ${barricaSeleccionada.id}.\nSe registraron los litros de vino incorporados en la base de datos.`);
+    guardarBarricasStorage();
+    cerrarModalOuillage();
     actualizarInspector();
     renderRacks();
+    alert(`✅ Relleno de ${vol.toFixed(2)} L registrado exitosamente con vino de "${barricaSeleccionada.cubaRelleno}".`);
   }
 
-  function dosificarSO2() {
-    barricaSeleccionada.so2 = 32.0;
+  function abrirModalSO2() {
+    const b = barricaSeleccionada;
+    document.getElementById('so2-modal-desc').innerHTML = `
+      Ajuste fitosanitario preventivo contra <i>Brettanomyces</i> para la barrica <b>${b.id}</b>.<br>
+      • <b>SO₂ Libre actual:</b> ${b.so2} mg/L (pH: ${b.ph.toFixed(2)}).<br>
+      • <b>Capacidad:</b> ${b.capacidad || 225} Litros.
+    `;
+    document.getElementById('input-so2-target').value = 32;
+    calcularGramosSO2();
+    document.getElementById('modalSO2').style.display = 'flex';
+  }
+  function cerrarModalSO2() {
+    document.getElementById('modalSO2').style.display = 'none';
+  }
+
+  function calcularGramosSO2() {
+    const target = parseFloat(document.getElementById('input-so2-target').value);
+    const act = barricaSeleccionada.so2;
+    const delta = Math.max(0, target - act);
+    const cap = barricaSeleccionada.capacidad || 225;
+    const g = (delta * cap) / 500.0; // Factor metabisulfito (50% SO2 útil)
+    document.getElementById('out-so2-gramos').innerText = g.toFixed(2) + " gramos";
+  }
+
+  function confirmarSO2() {
+    const target = parseFloat(document.getElementById('input-so2-target').value);
+    barricaSeleccionada.so2 = target;
     barricaSeleccionada.estado = barricaSeleccionada.diasOuillage >= 25 ? "Requiere Ouillage" : "Óptimo";
-    alert(`✅ Micro-adición de SO₂ registrada.\nNivel ajustado a 32.0 mg/L de SO₂ libre con metabisulfito de potasio.`);
+    guardarBarricasStorage();
+    cerrarModalSO2();
     actualizarInspector();
     renderRacks();
+    alert(`✅ SO₂ Libre ajustado a ${target} mg/L con éxito.`);
   }
 
   function imprimirEtiqueta() {
-    alert(`🏷️ Enviando orden de impresión térmica/láser para código QR de la barrica ${barricaSeleccionada.id}.`);
+    const b = barricaSeleccionada;
+    alert(`🏷️ Imprimiendo ficha QR para Barrica ${b.id}\nCuba de Origen: ${b.cubaOrigen}\nLote: ${b.lote}\nNodriza: ${b.cubaRelleno}`);
   }
 
   function filtrar(tipo) {
@@ -633,13 +1115,35 @@
     const factorTemp = 1.0 + (Math.max(0, temp - 15) * 0.08) - (Math.max(0, 15 - temp) * 0.04);
     const factorHR = Math.max(0.5, Math.min(2.5, 1.0 + ((80 - hr) * 0.025)));
     const mlDia = 24.0 * factorTemp * factorHR;
-    const mermaMensualTotal = (mlDia * 30.4 * 36) / 1000.0;
+    const mermaMensualTotal = (mlDia * 30.4 * BARRICAS.length) / 1000.0;
 
     document.getElementById('out-tasa-dia').innerText = mlDia.toFixed(1) + ' mL/día';
     document.getElementById('out-merma-total').innerText = mermaMensualTotal.toFixed(1) + ' Litros/mes';
   }
 
+  // Tema Claro / Oscuro
+  function toggleTheme() {
+    const isLight = document.body.classList.toggle('light-mode');
+    localStorage.setItem('barrel-theme', isLight ? 'light' : 'dark');
+    const icon = document.getElementById('themeIcon');
+    const txt = document.getElementById('themeText');
+    if (icon) icon.textContent = isLight ? '🌙' : '☀️';
+    if (txt) txt.textContent = isLight ? 'Modo Oscuro' : 'Modo Claro';
+  }
+
+  function initTheme() {
+    const saved = localStorage.getItem('barrel-theme');
+    if (saved === 'light') {
+      document.body.classList.add('light-mode');
+      const icon = document.getElementById('themeIcon');
+      const txt = document.getElementById('themeText');
+      if (icon) icon.textContent = '🌙';
+      if (txt) txt.textContent = 'Modo Oscuro';
+    }
+  }
+
   window.addEventListener('load', () => {
+    initTheme();
     renderRacks();
     actualizarInspector();
     simularCava();
