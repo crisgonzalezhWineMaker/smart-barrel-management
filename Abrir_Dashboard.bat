@@ -4,11 +4,13 @@ chcp 65001 > nul
 cd /d "%~dp0"
 
 echo ========================================================
-echo   🪵 Iniciando Visual Cockpit · Smart Barrel Copilot
+echo   SMART BARREL COPILOT - Visual Cellar Cockpit
+echo   Iniciando servidor en http://localhost:8070
 echo ========================================================
-echo Abriendo en tu navegador predeterminado...
-echo Localhost: http://localhost:8070/index.html
+echo.
+echo Presiona Ctrl+C para detener el servidor.
 echo.
 
+start "" http://localhost:8070/index.html
 python "dashboard\server.py"
 pause
